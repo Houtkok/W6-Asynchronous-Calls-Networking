@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:w6_asynchronous_calls_networking/EX-1-START-CODE/provider/courses_provider.dart';
 import '../models/course.dart';
 import 'course_screen.dart';
 
@@ -12,7 +14,6 @@ class CourseListScreen extends StatefulWidget {
 }
 
 class _CourseListScreenState extends State<CourseListScreen> {
-  final List<Course> _allCourses = [Course(name: 'HTML'), Course(name: 'JAVA')];
 
   void _editCourse(Course course) async {
     await Navigator.of(context).push<Course>(
@@ -25,7 +26,15 @@ class _CourseListScreenState extends State<CourseListScreen> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    Provider.of<CoursesProvider>(context,listen: false).loadCourses();
+  }
+  
+  @override
   Widget build(BuildContext context) {
+  final coursesProvider = Provider.of<CoursesProvider>(context);
+  final courses = coursesProvider.courses;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,12 +42,12 @@ class _CourseListScreenState extends State<CourseListScreen> {
         title: const Text('SCORE APP', style: TextStyle(color: Colors.white)),
       ),
       body: ListView.builder(
-        itemCount: _allCourses.length,
+        itemCount: courses.length,
         itemBuilder:
             (ctx, index) => Dismissible(
-              key: Key(_allCourses[index].name),
+              key: Key(courses[index].name),
               child: CourseTile(
-                course: _allCourses[index],
+                course: courses[index],
                 onEdit: _editCourse,
               ),
             ),
